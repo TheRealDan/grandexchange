@@ -1,0 +1,6 @@
+name: GrandExchange
+version: @version@
+main: dev.therealdan.grandexchange.GrandExchange
+api-version: 1.13
+depend: [Vault]
+authors: [TheRealDan]
