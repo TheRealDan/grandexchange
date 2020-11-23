@@ -82,4 +82,9 @@ public class BuyUI implements Listener {
         player.openInventory(inventory);
         _uiOpen.put(player.getUniqueId(), search);
     }
+
+    public void closeAll() {
+        for (UUID uuid : _uiOpen.keySet())
+            Bukkit.getPlayer(uuid).closeInventory();
+    }
 }

@@ -36,6 +36,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         _sellUI.cancelAll();
+        _buyUI.closeAll();
         _grandExchange.save();
     }
 
