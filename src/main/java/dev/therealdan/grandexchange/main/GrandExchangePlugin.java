@@ -1,11 +1,11 @@
-package dev.therealdan.grandexchange;
+package dev.therealdan.grandexchange.main;
 
 import dev.therealdan.grandexchange.commands.GrandExchangeCommand;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class GrandExchange extends JavaPlugin {
+public final class GrandExchangePlugin extends JavaPlugin {
 
     private Economy economy = null;
 

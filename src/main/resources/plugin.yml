@@ -1,6 +1,6 @@
 name: GrandExchange
 version: @version@
-main: dev.therealdan.grandexchange.GrandExchange
+main: dev.therealdan.grandexchange.main.GrandExchangePlugin
 api-version: 1.13
 depend: [Vault]
 authors: [TheRealDan]
