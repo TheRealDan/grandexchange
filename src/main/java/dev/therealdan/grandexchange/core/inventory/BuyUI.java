@@ -10,7 +10,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +46,7 @@ public class BuyUI implements Listener {
 
         Inventory inventory = Bukkit.createInventory(null, size, "Grand Exchange" + (search.length() > 0 ? " - " + search : ""));
         for (Material material : materials)
-            inventory.addItem(new ItemStack(material));
+            inventory.addItem(_grandExchange.getIcon(material));
 
         player.openInventory(inventory);
         _uiOpen.put(player.getUniqueId(), search);

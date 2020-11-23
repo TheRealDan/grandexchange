@@ -2,11 +2,11 @@ package dev.therealdan.grandexchange.core;
 
 import dev.therealdan.grandexchange.main.Config;
 import dev.therealdan.grandexchange.main.GrandExchangePlugin;
+import dev.therealdan.grandexchange.models.Icon;
 import dev.therealdan.grandexchange.models.YamlFile;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -69,17 +69,27 @@ public class GrandExchange {
         _stock.put(material, getStockCount(material) - amount);
     }
 
-    public long calculateSellValue(Inventory inventory) {
-        GrandExchange grandExchange = copy();
+    public long calculateSellValue(List<ItemStack> itemStacks) {
+        GrandExchange simulation = getSimulation();
         long value = 0;
-        for (ItemStack itemStack : inventory.getContents()) {
+        for (ItemStack itemStack : itemStacks) {
             if (itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
             int amount = itemStack.getAmount();
             while (amount > 0) {
-                value += grandExchange.getSellPrice(itemStack.getType());
-                grandExchange.addStock(itemStack.getType(), 1);
+                value += simulation.getSellPrice(itemStack.getType());
+                simulation.addStock(itemStack.getType(), 1);
                 amount--;
             }
+        }
+        return value;
+    }
+
+    public long calculateBuyStackPrice(Material material, int stackSize) {
+        GrandExchange simulation = getSimulation();
+        long value = 0;
+        for (int i = 0; i <= stackSize; i++) {
+            value += simulation.getBuyPrice(material);
+            simulation.removeStock(material, 1);
         }
         return value;
     }
@@ -144,10 +154,18 @@ public class GrandExchange {
         return new ArrayList<>(_stock.keySet());
     }
 
-    private GrandExchange copy() {
+    private GrandExchange getSimulation() {
         GrandExchange grandExchange = new GrandExchange();
-        grandExchange._stock = new HashMap<Material, Long>(_stock);
+        grandExchange._stock = new HashMap<>(_stock);
         return grandExchange;
+    }
+
+    public Icon getIcon(Material material) {
+        return new Icon(material, "",
+                _config.primary + "Stock: " + _config.secondary + getStockCount(material),
+                _config.primary + "Price: " + _config.secondary + "$" + getBuyPrice(material),
+                _config.primary + "Stack Price: " + _config.secondary + (getStockCount(material) < material.getMaxStackSize() ? "Not enough stock" : "$" + calculateBuyStackPrice(material, material.getMaxStackSize()) + _config.primary + " (shift click)")
+        );
     }
 
     public static String getName(Material material) {

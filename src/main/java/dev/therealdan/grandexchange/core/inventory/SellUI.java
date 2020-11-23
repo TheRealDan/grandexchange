@@ -13,6 +13,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -48,7 +49,7 @@ public class SellUI implements Listener {
 
         player.getInventory().setItem(event.getSlot(), new ItemStack(Material.AIR));
         event.getInventory().addItem(itemStack);
-        Inventory inventory = Bukkit.createInventory(null, _inventorySize, "Grand Exchange Sell - $" + _grandExchange.calculateSellValue(event.getInventory()));
+        Inventory inventory = Bukkit.createInventory(null, _inventorySize, "Grand Exchange Sell - $" + _grandExchange.calculateSellValue(Arrays.asList(event.getInventory().getContents())));
         for (int i = 0; i < _inventorySize; i++) {
             ItemStack item = event.getInventory().getItem(i);
             if (item == null || item.getType().equals(Material.AIR)) continue;
