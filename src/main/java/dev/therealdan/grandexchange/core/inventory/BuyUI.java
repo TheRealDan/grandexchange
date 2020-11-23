@@ -39,6 +39,7 @@ public class BuyUI implements Listener {
         event.setCancelled(true);
 
         if (event.getClick().equals(ClickType.DOUBLE_CLICK)) return;
+        if (event.getSlot() != event.getRawSlot()) return;
 
         if (event.getCurrentItem() == null) return;
         Material material = event.getCurrentItem().getType();
