@@ -76,4 +76,15 @@ public class SellUI implements Listener {
         player.openInventory(Bukkit.createInventory(null, _inventorySize, "Grand Exchange Sell"));
         _uiOpen.add(player.getUniqueId());
     }
+
+    public void cancelAll() {
+        for (UUID uuid : _uiOpen) {
+            Player player = Bukkit.getPlayer(uuid);
+            for (ItemStack itemStack : player.getOpenInventory().getTopInventory().getContents()) {
+                if (itemStack == null) continue;
+                player.getWorld().dropItem(player.getLocation(), itemStack);
+            }
+            player.closeInventory();
+        }
+    }
 }

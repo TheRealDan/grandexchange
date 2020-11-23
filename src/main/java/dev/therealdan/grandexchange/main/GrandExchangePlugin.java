@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class GrandExchangePlugin extends JavaPlugin {
 
     private Economy economy = null;
+    private SellUI _sellUI;
 
     @Override
     public void onEnable() {
@@ -18,11 +19,16 @@ public final class GrandExchangePlugin extends JavaPlugin {
         Config config = new Config(this);
 
         GrandExchange grandExchange = new GrandExchange(economy, config);
-        SellUI sellUI = new SellUI(economy, grandExchange);
+        _sellUI = new SellUI(economy, grandExchange);
 
-        getServer().getPluginManager().registerEvents(sellUI, this);
+        getServer().getPluginManager().registerEvents(_sellUI, this);
 
-        getCommand("GrandExchange").setExecutor(new GrandExchangeCommand(config, sellUI));
+        getCommand("GrandExchange").setExecutor(new GrandExchangeCommand(config, _sellUI));
+    }
+
+    @Override
+    public void onDisable() {
+        _sellUI.cancelAll();
     }
 
     private void setupEconomy() {
