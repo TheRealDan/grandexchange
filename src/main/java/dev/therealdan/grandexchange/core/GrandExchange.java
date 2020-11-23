@@ -119,9 +119,9 @@ public class GrandExchange {
     }
 
     public List<Material> getStock(String search, int max) {
-        List<Material> materials = getStock(true);
-        if (search.length() == 0) return materials;
+        if (search.length() == 0) return getStockByStockCount();
 
+        List<Material> materials = getStockByAlphabetical();
         List<Material> filtered = new ArrayList<>();
         for (Material material : materials) {
             if (getName(material).toLowerCase().contains(search.toLowerCase()))
@@ -131,10 +131,25 @@ public class GrandExchange {
         return filtered;
     }
 
-    public List<Material> getStock(boolean orderAlphabetically) {
+    public List<Material> getStockByStockCount() {
         List<Material> materials = getStock();
-        if (!orderAlphabetically) return materials;
+        List<Material> sorted = new ArrayList<>();
+        Material next;
+        while (materials.size() > 0) {
+            next = null;
+            for (Material material : materials) {
+                if (next == null || getStockCount(material) > getStockCount(next)) {
+                    next = material;
+                }
+            }
+            sorted.add(next);
+            materials.remove(next);
+        }
+        return sorted;
+    }
 
+    public List<Material> getStockByAlphabetical() {
+        List<Material> materials = getStock();
         List<Material> sorted = new ArrayList<>();
         Material next;
         while (materials.size() > 0) {
