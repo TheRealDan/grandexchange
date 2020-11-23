@@ -1,6 +1,8 @@
 package dev.therealdan.grandexchange.core;
 
 import dev.therealdan.grandexchange.main.Config;
+import dev.therealdan.grandexchange.main.GrandExchangePlugin;
+import dev.therealdan.grandexchange.models.YamlFile;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -16,12 +18,27 @@ public class GrandExchange {
 
     private Economy _economy;
     private Config _config;
+    private YamlFile _yamlFile;
 
     private HashMap<Material, Long> _stock = new HashMap<>();
 
-    public GrandExchange(Economy economy, Config config) {
+    private GrandExchange() {
+    }
+
+    public GrandExchange(GrandExchangePlugin grandExchangePlugin, Economy economy, Config config) {
         _economy = economy;
         _config = config;
+        _yamlFile = new YamlFile(grandExchangePlugin, "data/grandexchange.yml");
+
+        if (_yamlFile.getData().contains("Stock"))
+            for (String material : _yamlFile.getData().getConfigurationSection("Stock").getKeys(false))
+                _stock.put(Material.valueOf(material), _yamlFile.getData().getLong("Stock." + material));
+    }
+
+    public void save() {
+        for (Map.Entry<Material, Long> entry : _stock.entrySet())
+            _yamlFile.getData().set("Stock." + entry.getKey().toString(), entry.getValue());
+        _yamlFile.save();
     }
 
     public void sell(Player player, ItemStack itemStack) {
@@ -97,7 +114,7 @@ public class GrandExchange {
     }
 
     private GrandExchange copy() {
-        GrandExchange grandExchange = new GrandExchange(null, null);
+        GrandExchange grandExchange = new GrandExchange();
         grandExchange._stock = new HashMap<Material, Long>(_stock);
         return grandExchange;
     }

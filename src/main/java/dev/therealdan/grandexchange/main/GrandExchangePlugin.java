@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class GrandExchangePlugin extends JavaPlugin {
 
     private Economy economy = null;
+    private GrandExchange _grandExchange;
     private SellUI _sellUI;
 
     @Override
@@ -18,8 +19,8 @@ public final class GrandExchangePlugin extends JavaPlugin {
 
         Config config = new Config(this);
 
-        GrandExchange grandExchange = new GrandExchange(economy, config);
-        _sellUI = new SellUI(economy, grandExchange);
+        _grandExchange = new GrandExchange(this, economy, config);
+        _sellUI = new SellUI(economy, _grandExchange);
 
         getServer().getPluginManager().registerEvents(_sellUI, this);
 
@@ -29,6 +30,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         _sellUI.cancelAll();
+        _grandExchange.save();
     }
 
     private void setupEconomy() {
