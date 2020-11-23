@@ -54,6 +54,7 @@ public class SellUI implements Listener {
             if (item == null || item.getType().equals(Material.AIR)) continue;
             inventory.setItem(i, item);
         }
+        _uiOpen.remove(player.getUniqueId());
         player.openInventory(inventory);
         _uiOpen.add(player.getUniqueId());
     }
@@ -65,7 +66,10 @@ public class SellUI implements Listener {
         _uiOpen.remove(player.getUniqueId());
         if (!open) return;
 
-        // TODO - sell
+        for (ItemStack itemStack : event.getInventory().getContents()) {
+            if (itemStack == null) continue;
+            _grandExchange.sell(player, itemStack);
+        }
     }
 
     public void open(Player player) {
