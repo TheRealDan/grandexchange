@@ -54,8 +54,7 @@ public class GrandExchange {
             amount--;
         }
 
-        String name = itemStack.getType().toString().substring(0, 1) + itemStack.getType().toString().substring(1).toLowerCase().replace("_", " ");
-        String message = _config.secondary + itemStack.getAmount() + "x " + name + _config.primary + " sold for " + _config.secondary + "$" + value + _config.primary;
+        String message = _config.secondary + itemStack.getAmount() + "x " + getName(itemStack.getType()) + _config.primary + " sold for " + _config.secondary + "$" + value + _config.primary;
         if (max != min) message += " ($" + max + " ~ $" + min + ")";
         player.sendMessage(message);
 
@@ -109,6 +108,38 @@ public class GrandExchange {
         return _stock.getOrDefault(material, 0L);
     }
 
+    public List<Material> getStock(String search, int max) {
+        List<Material> materials = getStock(true);
+        if (search.length() == 0) return materials;
+
+        List<Material> filtered = new ArrayList<>();
+        for (Material material : materials) {
+            if (getName(material).toLowerCase().contains(search.toLowerCase()))
+                filtered.add(material);
+            if (filtered.size() >= max) return filtered;
+        }
+        return filtered;
+    }
+
+    public List<Material> getStock(boolean orderAlphabetically) {
+        List<Material> materials = getStock();
+        if (!orderAlphabetically) return materials;
+
+        List<Material> sorted = new ArrayList<>();
+        Material next;
+        while (materials.size() > 0) {
+            next = null;
+            for (Material material : materials) {
+                if (next == null || getName(material).compareTo(getName(next)) < 0) {
+                    next = material;
+                }
+            }
+            sorted.add(next);
+            materials.remove(next);
+        }
+        return sorted;
+    }
+
     public List<Material> getStock() {
         return new ArrayList<>(_stock.keySet());
     }
@@ -117,5 +148,9 @@ public class GrandExchange {
         GrandExchange grandExchange = new GrandExchange();
         grandExchange._stock = new HashMap<Material, Long>(_stock);
         return grandExchange;
+    }
+
+    public static String getName(Material material) {
+        return material.toString().substring(0, 1) + material.toString().substring(1).toLowerCase().replace("_", " ");
     }
 }
