@@ -1,5 +1,6 @@
 package dev.therealdan.grandexchange.commands;
 
+import dev.therealdan.grandexchange.core.inventory.BuyUI;
 import dev.therealdan.grandexchange.core.inventory.SellUI;
 import dev.therealdan.grandexchange.main.Config;
 import org.bukkit.command.Command;
@@ -11,10 +12,12 @@ public class GrandExchangeCommand implements CommandExecutor {
 
     private Config _config;
     private SellUI _sellUI;
+    private BuyUI _buyUI;
 
-    public GrandExchangeCommand(Config config, SellUI sellUI) {
+    public GrandExchangeCommand(Config config, SellUI sellUI, BuyUI buyUI) {
         _config = config;
         _sellUI = sellUI;
+        _buyUI = buyUI;
     }
 
     @Override
@@ -30,6 +33,14 @@ public class GrandExchangeCommand implements CommandExecutor {
                 _sellUI.open(player);
                 return true;
             } else if (args[0].equalsIgnoreCase("Buy")) {
+                StringBuilder search = new StringBuilder();
+                if (args.length > 1) {
+                    search.append(args[1]);
+                    for (int i = 2; i < args.length; i++)
+                        search.append(" ").append(args[i]);
+                }
+                _buyUI.open(player, search.toString());
+                return true;
             }
         }
 
