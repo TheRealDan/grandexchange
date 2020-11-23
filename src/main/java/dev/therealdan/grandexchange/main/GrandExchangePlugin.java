@@ -24,7 +24,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
 
         _grandExchange = new GrandExchange(this, economy, config);
         _sellUI = new SellUI(economy, _grandExchange);
-        _buyUI = new BuyUI(economy, _grandExchange);
+        _buyUI = new BuyUI(economy, config, _grandExchange);
 
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(_sellUI, this);
