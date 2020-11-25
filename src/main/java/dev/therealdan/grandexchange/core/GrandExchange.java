@@ -20,6 +20,8 @@ public class GrandExchange {
     private Config _config;
     private YamlFile _yamlFile;
 
+    private long _baseCost = 10;
+
     private HashMap<Material, Long> _stock = new HashMap<>();
 
     private GrandExchange() {
@@ -95,11 +97,11 @@ public class GrandExchange {
     }
 
     public long getBuyPrice(Material material) {
-        return getSellPrice(material) * 2;
+        return (long) (getSellPrice(material) * 1.5);
     }
 
     public long getSellPrice(Material material) {
-        return Math.max(getStockCount(getMostCommonItem()) - getStockCount(material), 1);
+        return _baseCost * (1 - (getStockCount(material) / getTotalStock()));
     }
 
     public Material getMostCommonItem() {
@@ -116,6 +118,13 @@ public class GrandExchange {
 
     public long getStockCount(Material material) {
         return _stock.getOrDefault(material, 0L);
+    }
+
+    public long getTotalStock() {
+        long totalStock = 0;
+        for (long stock : _stock.values())
+            totalStock += stock;
+        return totalStock;
     }
 
     public List<Material> getStock(String search, int max) {
