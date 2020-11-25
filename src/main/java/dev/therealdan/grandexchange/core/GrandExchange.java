@@ -101,7 +101,7 @@ public class GrandExchange {
     }
 
     public long getSellPrice(Material material) {
-        return _baseCost * (1 - (getStockCount(material) / getTotalStock()));
+        return (long) (_baseCost * (1.0 - ((double) getStockCount(material) / (double) getTotalStock())));
     }
 
     public Material getMostCommonItem() {
