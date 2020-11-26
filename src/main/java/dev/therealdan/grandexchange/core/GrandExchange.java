@@ -21,6 +21,7 @@ public class GrandExchange {
     private YamlFile _yamlFile;
 
     private long _baseCost = 10;
+    private double _processingFee = 0.5;
 
     private HashMap<Material, Long> _stock = new HashMap<>();
 
@@ -97,7 +98,7 @@ public class GrandExchange {
     }
 
     public long getBuyPrice(Material material) {
-        return (long) (getSellPrice(material) * 1.5);
+        return (long) (getSellPrice(material) * (1.0 + _processingFee));
     }
 
     public long getSellPrice(Material material) {
