@@ -20,8 +20,8 @@ public class GrandExchange {
     private Config _config;
     private YamlFile _yamlFile;
 
-    private long _baseCost = 10;
-    private double _processingFee = 0.5;
+    private long _baseCost = 20;
+    private double _processingFee = 0.65;
 
     private HashMap<Material, Long> _stock = new HashMap<>();
 
