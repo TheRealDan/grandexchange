@@ -90,7 +90,7 @@ public class GrandExchange {
     public long calculateBuyStackPrice(Material material, int stackSize) {
         GrandExchange simulation = getSimulation();
         long value = 0;
-        for (int i = 0; i <= stackSize; i++) {
+        for (int i = 0; i < stackSize; i++) {
             value += simulation.getBuyPrice(material);
             simulation.removeStock(material, 1);
         }
@@ -186,10 +186,11 @@ public class GrandExchange {
     }
 
     public Icon getIcon(Material material) {
+        int stackSize = (int) Math.min(getStockCount(material), material.getMaxStackSize());
         return new Icon(material, "",
                 _config.primary + "Stock: " + _config.secondary + getStockCount(material),
                 _config.primary + "Price: " + _config.secondary + "$" + getBuyPrice(material),
-                _config.primary + "Stack Price: " + _config.secondary + (getStockCount(material) < material.getMaxStackSize() ? "Not enough stock" : "$" + calculateBuyStackPrice(material, material.getMaxStackSize()) + _config.primary + " (shift click)")
+                _config.primary + "Stack Price: " + _config.secondary + "$" + calculateBuyStackPrice(material, stackSize) + _config.primary + " (" + _config.secondary + stackSize + "x" + _config.primary + ", shift click)"
         );
     }
 
