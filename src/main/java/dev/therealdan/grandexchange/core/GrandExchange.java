@@ -44,7 +44,7 @@ public class GrandExchange {
     }
 
     public void save() {
-        _yamlFile.getData().set("King", _king.getUniqueId().toString());
+        if (_king != null) _yamlFile.getData().set("King", _king.getUniqueId().toString());
         for (Map.Entry<Material, Long> entry : _stock.entrySet())
             _yamlFile.getData().set("Stock." + entry.getKey().toString(), entry.getValue());
         _yamlFile.save();
