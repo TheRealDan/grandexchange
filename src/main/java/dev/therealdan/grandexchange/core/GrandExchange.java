@@ -5,14 +5,13 @@ import dev.therealdan.grandexchange.main.GrandExchangePlugin;
 import dev.therealdan.grandexchange.models.Icon;
 import dev.therealdan.grandexchange.models.YamlFile;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GrandExchange {
 
@@ -23,8 +22,10 @@ public class GrandExchange {
     private double _baseCost = 1000;
     private double _stretch = 130;
     private double _processingFee = 0.65;
+    private double _taxRate = 0.2;
 
     private HashMap<Material, Long> _stock = new HashMap<>();
+    private OfflinePlayer _king = null;
 
     private GrandExchange() {
     }
@@ -34,12 +35,16 @@ public class GrandExchange {
         _config = config;
         _yamlFile = new YamlFile(grandExchangePlugin, "data/grandexchange.yml");
 
+        if (_yamlFile.getData().contains("King"))
+            _king = Bukkit.getOfflinePlayer(UUID.fromString(_yamlFile.getData().getString("King")));
+
         if (_yamlFile.getData().contains("Stock"))
             for (String material : _yamlFile.getData().getConfigurationSection("Stock").getKeys(false))
                 _stock.put(Material.valueOf(material), _yamlFile.getData().getLong("Stock." + material));
     }
 
     public void save() {
+        _yamlFile.getData().set("King", _king.getUniqueId().toString());
         for (Map.Entry<Material, Long> entry : _stock.entrySet())
             _yamlFile.getData().set("Stock." + entry.getKey().toString(), entry.getValue());
         _yamlFile.save();
@@ -51,7 +56,7 @@ public class GrandExchange {
         long value = 0;
         long amount = itemStack.getAmount();
         while (amount > 0) {
-            min = getSellPrice(itemStack.getType());
+            min = getBaseSellPrice(itemStack.getType());
             value += min;
             if (max == -1) max = value;
             addStock(itemStack.getType(), 1);
@@ -80,7 +85,7 @@ public class GrandExchange {
             if (itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
             int amount = itemStack.getAmount();
             while (amount > 0) {
-                value += simulation.getSellPrice(itemStack.getType());
+                value += simulation.getBaseSellPrice(itemStack.getType());
                 simulation.addStock(itemStack.getType(), 1);
                 amount--;
             }
@@ -92,17 +97,25 @@ public class GrandExchange {
         GrandExchange simulation = getSimulation();
         long value = 0;
         for (int i = 0; i < stackSize; i++) {
-            value += simulation.getBuyPrice(material);
+            value += simulation.getFinalBuyPrice(material);
             simulation.removeStock(material, 1);
         }
         return value;
     }
 
-    public long getBuyPrice(Material material) {
-        return (long) (getSellPrice(material) * (1.0 + _processingFee));
+    public long getBaseBuyPrice(Material material) {
+        return getBaseSellPrice(material);
     }
 
-    public long getSellPrice(Material material) {
+    public long getTax(Material material) {
+        return (long) (getBaseBuyPrice(material) * _taxRate);
+    }
+
+    public long getFinalBuyPrice(Material material) {
+        return (long) (getBaseSellPrice(material) * (1.0 + _processingFee + _taxRate));
+    }
+
+    public long getBaseSellPrice(Material material) {
         return (long) (_baseCost * Math.exp(-(getStockCount(material) / _stretch)) + 1);
     }
 
@@ -127,6 +140,22 @@ public class GrandExchange {
         for (long stock : _stock.values())
             totalStock += stock;
         return totalStock;
+    }
+
+    public void setTaxRate(double taxRate) {
+        _taxRate = taxRate;
+    }
+
+    public double getTaxRate() {
+        return _taxRate;
+    }
+
+    public void setKing(OfflinePlayer king) {
+        _king = king;
+    }
+
+    public OfflinePlayer getKing() {
+        return _king;
     }
 
     public List<Material> getStock(String search, int max) {
@@ -190,7 +219,7 @@ public class GrandExchange {
         int stackSize = (int) Math.min(getStockCount(material), material.getMaxStackSize());
         return new Icon(material, "",
                 _config.primary + "Stock: " + _config.secondary + getStockCount(material),
-                _config.primary + "Price: " + _config.secondary + "$" + getBuyPrice(material),
+                _config.primary + "Price: " + _config.secondary + "$" + getFinalBuyPrice(material),
                 _config.primary + "Stack Price: " + _config.secondary + "$" + calculateBuyStackPrice(material, stackSize) + _config.primary + " (" + _config.secondary + stackSize + "x" + _config.primary + ", shift click)"
         );
     }

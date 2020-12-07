@@ -30,7 +30,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
         manager.registerEvents(_sellUI, this);
         manager.registerEvents(_buyUI, this);
 
-        getCommand("GrandExchange").setExecutor(new GrandExchangeCommand(config, _sellUI, _buyUI));
+        getCommand("GrandExchange").setExecutor(new GrandExchangeCommand(config, _grandExchange, _sellUI, _buyUI));
     }
 
     @Override

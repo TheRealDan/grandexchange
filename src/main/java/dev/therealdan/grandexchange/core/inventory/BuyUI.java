@@ -58,7 +58,7 @@ public class BuyUI implements Listener {
             }
 
         } else {
-            long price = _grandExchange.getBuyPrice(material);
+            long price = _grandExchange.getFinalBuyPrice(material);
             if (_economy.has(player, price)) {
                 _economy.withdrawPlayer(player, price);
                 _grandExchange.removeStock(material, 1);
