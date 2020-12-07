@@ -50,6 +50,10 @@ public class BuyUI implements Listener {
             int stackSize = (int) Math.min(_grandExchange.getStockCount(material), material.getMaxStackSize());
             long price = _grandExchange.calculateBuyStackPrice(material, stackSize);
             if (_economy.has(player, price)) {
+                if (_grandExchange.getKing() != null) {
+                    long tax = _grandExchange.calculateTax(material, stackSize);
+                    _economy.depositPlayer(_grandExchange.getKing(), tax);
+                }
                 _economy.withdrawPlayer(player, price);
                 _grandExchange.removeStock(material, stackSize);
                 player.getInventory().addItem(new ItemStack(material, stackSize));
@@ -60,6 +64,10 @@ public class BuyUI implements Listener {
         } else {
             long price = _grandExchange.getFinalBuyPrice(material);
             if (_economy.has(player, price)) {
+                if (_grandExchange.getKing() != null) {
+                    long tax = _grandExchange.getTax(material);
+                    _economy.depositPlayer(_grandExchange.getKing(), tax);
+                }
                 _economy.withdrawPlayer(player, price);
                 _grandExchange.removeStock(material, 1);
                 player.getInventory().addItem(new ItemStack(material));

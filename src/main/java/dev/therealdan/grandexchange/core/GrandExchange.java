@@ -103,6 +103,16 @@ public class GrandExchange {
         return value;
     }
 
+    public long calculateTax(Material material, int stackSize) {
+        GrandExchange simulation = getSimulation();
+        long value = 0;
+        for (int i = 0; i < stackSize; i++) {
+            value += simulation.getTax(material);
+            simulation.removeStock(material, 1);
+        }
+        return value;
+    }
+
     public long getBaseBuyPrice(Material material) {
         return getBaseSellPrice(material);
     }
@@ -212,6 +222,7 @@ public class GrandExchange {
     private GrandExchange getSimulation() {
         GrandExchange grandExchange = new GrandExchange();
         grandExchange._stock = new HashMap<>(_stock);
+        grandExchange._taxRate = _taxRate;
         return grandExchange;
     }
 
