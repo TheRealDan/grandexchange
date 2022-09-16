@@ -22,7 +22,7 @@ public class GrandExchange {
     private double _baseCost = 1000;
     private double _stretch = 130;
     private double _processingFee = 0.65;
-    private double _taxRate = 0.2;
+    private double _taxRate = 0;
 
     private HashMap<Material, Long> _stock = new HashMap<>();
     private OfflinePlayer _king = null;
