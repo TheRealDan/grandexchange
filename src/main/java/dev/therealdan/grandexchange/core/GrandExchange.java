@@ -85,8 +85,8 @@ public class GrandExchange {
             if (itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
             int amount = itemStack.getAmount();
             while (amount > 0) {
-                value += simulation.getBaseSellPrice(itemStack.getType());
                 simulation.addStock(itemStack.getType(), 1);
+                value += simulation.getBaseSellPrice(itemStack.getType());
                 amount--;
             }
         }
