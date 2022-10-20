@@ -83,7 +83,7 @@ public class BuyUI implements Listener {
     }
 
     public void open(Player player, String search) {
-        List<Material> materials = _grandExchange.getStock(search, 54);
+        List<Material> materials = _grandExchange.getStock(search, _grandExchange.getSortPreference(player.getUniqueId()), 54);
         int size = Math.min(54, Math.max(9, materials.size()));
         while (size % 9 != 0) size++;
 

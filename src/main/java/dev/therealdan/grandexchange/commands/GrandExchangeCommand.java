@@ -2,6 +2,7 @@ package dev.therealdan.grandexchange.commands;
 
 import dev.therealdan.grandexchange.core.GrandExchange;
 import dev.therealdan.grandexchange.core.inventory.BuyUI;
+import dev.therealdan.grandexchange.core.inventory.PreferencesUI;
 import dev.therealdan.grandexchange.core.inventory.SellUI;
 import dev.therealdan.grandexchange.main.Config;
 import org.bukkit.Bukkit;
@@ -21,12 +22,14 @@ public class GrandExchangeCommand implements CommandExecutor {
     private GrandExchange _grandExchange;
     private SellUI _sellUI;
     private BuyUI _buyUI;
+    private PreferencesUI _preferencesUI;
 
-    public GrandExchangeCommand(Config config, GrandExchange grandExchange, SellUI sellUI, BuyUI buyUI) {
+    public GrandExchangeCommand(Config config, GrandExchange grandExchange, SellUI sellUI, BuyUI buyUI, PreferencesUI preferencesUI) {
         _config = config;
         _grandExchange = grandExchange;
         _sellUI = sellUI;
         _buyUI = buyUI;
+        _preferencesUI = preferencesUI;
     }
 
     @Override
@@ -46,6 +49,10 @@ public class GrandExchangeCommand implements CommandExecutor {
                         search.append(" ").append(args[i]);
                 }
                 _buyUI.open(player, search.toString());
+                return true;
+
+            } else if (args[0].equalsIgnoreCase("Preferences") && player != null) {
+                _preferencesUI.open(player);
                 return true;
 
             } else if (args[0].equalsIgnoreCase("King") && sender.isOp()) {
@@ -84,6 +91,7 @@ public class GrandExchangeCommand implements CommandExecutor {
         sender.sendMessage("");
         sender.sendMessage(_config.primary + "/GE Sell " + _config.secondary + "Open the GE Sell menu");
         sender.sendMessage(_config.primary + "/GE Buy [Search] " + _config.secondary + "Open the GE Buy menu");
+        sender.sendMessage(_config.primary + "/GE Preferences " + _config.secondary + "Set your sorting preference");
         if (isKing(player)) sender.sendMessage(_config.primary + "/GE TaxRate [TaxRate] " + _config.secondary + "Set the tax rate");
         if (sender.isOp()) sender.sendMessage(_config.primary + "/GE King [Player] " + _config.secondary + "Elect a King");
         return true;

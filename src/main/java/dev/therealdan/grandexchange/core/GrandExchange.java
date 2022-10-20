@@ -25,6 +25,7 @@ public class GrandExchange {
     private double _taxRate = 0;
 
     private HashMap<Material, Long> _stock = new HashMap<>();
+    private HashMap<UUID, SortPreference> _sortPreference = new HashMap<>();
     private OfflinePlayer _king = null;
 
     private GrandExchange() {
@@ -41,12 +42,18 @@ public class GrandExchange {
         if (_yamlFile.getData().contains("Stock"))
             for (String material : _yamlFile.getData().getConfigurationSection("Stock").getKeys(false))
                 _stock.put(Material.valueOf(material), _yamlFile.getData().getLong("Stock." + material));
+
+        if (_yamlFile.getData().contains("Preferences"))
+            for (String uuid : _yamlFile.getData().getConfigurationSection("Preferences").getKeys(false))
+                _sortPreference.put(UUID.fromString(uuid), SortPreference.valueOf(_yamlFile.getData().getString("Preferences." + uuid + ".SortPreference")));
     }
 
     public void save() {
         if (_king != null) _yamlFile.getData().set("King", _king.getUniqueId().toString());
         for (Map.Entry<Material, Long> entry : _stock.entrySet())
             _yamlFile.getData().set("Stock." + entry.getKey().toString(), entry.getValue());
+        for (Map.Entry<UUID, SortPreference> entry : _sortPreference.entrySet())
+            _yamlFile.getData().set("Preferences." + entry.getKey().toString() + ".SortPreference", entry.getValue().toString());
         _yamlFile.save();
     }
 
@@ -168,10 +175,10 @@ public class GrandExchange {
         return _king;
     }
 
-    public List<Material> getStock(String search, int max) {
-        if (search.length() == 0) return getStockByStockCount();
+    public List<Material> getStock(String search, SortPreference sortPreference, int max) {
+        if (search.length() == 0) return getStock(sortPreference);
 
-        List<Material> materials = getStockByAlphabetical();
+        List<Material> materials = getStock(sortPreference);
         List<Material> filtered = new ArrayList<>();
         for (Material material : materials) {
             if (getName(material).toLowerCase().contains(search.toLowerCase()))
@@ -181,14 +188,28 @@ public class GrandExchange {
         return filtered;
     }
 
-    public List<Material> getStockByStockCount() {
+    public List<Material> getStock(SortPreference sortPreference) {
+        switch (sortPreference) {
+            default:
+            case STOCK_COUNT:
+                return getStockByStockCount(false);
+            case STOCK_COUNT_ASCENDING:
+                return getStockByStockCount(true);
+            case ALPHABETICAL:
+                return getStockByAlphabetical(false);
+            case ALPHABETICAL_DESCENDING:
+                return getStockByAlphabetical(true);
+        }
+    }
+
+    public List<Material> getStockByStockCount(boolean ascending) {
         List<Material> materials = getStock();
         List<Material> sorted = new ArrayList<>();
         Material next;
         while (materials.size() > 0) {
             next = null;
             for (Material material : materials) {
-                if (next == null || getStockCount(material) > getStockCount(next)) {
+                if (next == null || (ascending ? getStockCount(material) < getStockCount(next) : getStockCount(material) > getStockCount(next))) {
                     next = material;
                 }
             }
@@ -198,14 +219,14 @@ public class GrandExchange {
         return sorted;
     }
 
-    public List<Material> getStockByAlphabetical() {
+    public List<Material> getStockByAlphabetical(boolean descending) {
         List<Material> materials = getStock();
         List<Material> sorted = new ArrayList<>();
         Material next;
         while (materials.size() > 0) {
             next = null;
             for (Material material : materials) {
-                if (next == null || getName(material).compareTo(getName(next)) < 0) {
+                if (next == null || (descending ? getName(material).compareTo(getName(next)) > 0 : getName(material).compareTo(getName(next)) < 0)) {
                     next = material;
                 }
             }
@@ -233,6 +254,22 @@ public class GrandExchange {
                 _config.primary + "Price: " + _config.secondary + "$" + getFinalBuyPrice(material),
                 _config.primary + "Stack Price: " + _config.secondary + "$" + calculateBuyStackPrice(material, stackSize) + _config.primary + " (" + _config.secondary + stackSize + "x" + _config.primary + ", shift click)"
         );
+    }
+
+    public void setSortPreference(UUID uuid, SortPreference sortPreference) {
+        _sortPreference.put(uuid, sortPreference);
+    }
+
+    public SortPreference getSortPreference(UUID uuid) {
+        return _sortPreference.getOrDefault(uuid, SortPreference.STOCK_COUNT);
+    }
+
+    public enum SortPreference {
+        STOCK_COUNT, STOCK_COUNT_ASCENDING, ALPHABETICAL, ALPHABETICAL_DESCENDING;
+
+        public String getName() {
+            return this.toString().substring(0, 1) + this.toString().substring(1).toLowerCase().replace("_", " ");
+        }
     }
 
     public static String getName(Material material) {
