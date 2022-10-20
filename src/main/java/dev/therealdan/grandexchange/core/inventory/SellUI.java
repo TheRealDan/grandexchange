@@ -47,6 +47,8 @@ public class SellUI implements Listener {
         ItemStack itemStack = event.getCurrentItem();
         if (itemStack == null) return;
 
+        if (event.getInventory().firstEmpty() == -1) return;
+
         player.getInventory().setItem(event.getSlot(), new ItemStack(Material.AIR));
         event.getInventory().addItem(itemStack);
         Inventory inventory = Bukkit.createInventory(null, _inventorySize, "Grand Exchange Sell - $" + _grandExchange.calculateSellValue(Arrays.asList(event.getInventory().getContents())));
