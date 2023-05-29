@@ -1,7 +1,7 @@
 name: GrandExchange
 version: @version@
 main: dev.therealdan.grandexchange.main.GrandExchangePlugin
-api-version: 1.13
+api-version: 1.19
 depend: [Vault]
 authors: [TheRealDan]
 commands:
