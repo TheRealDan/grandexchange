@@ -104,8 +104,8 @@ public class GrandExchange {
         GrandExchange simulation = getSimulation();
         long value = 0;
         for (int i = 0; i < stackSize; i++) {
-            value += simulation.getFinalBuyPrice(material);
             simulation.removeStock(material, 1);
+            value += simulation.getFinalBuyPrice(material);
         }
         return value;
     }
