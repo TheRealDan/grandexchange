@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
@@ -58,6 +59,12 @@ public class GrandExchange {
     }
 
     public void sell(Player player, ItemStack itemStack) {
+        if (!canBeSold(itemStack)) {
+            player.sendMessage(_config.secondary + getName(itemStack.getType()) + _config.primary + " can not be sold");
+            player.getInventory().addItem(itemStack);
+            return;
+        }
+
         long max = -1;
         long min = 0;
         long value = 0;
@@ -89,7 +96,7 @@ public class GrandExchange {
         GrandExchange simulation = getSimulation();
         long value = 0;
         for (ItemStack itemStack : itemStacks) {
-            if (itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
+            if (itemStack == null || itemStack.getType().equals(Material.AIR) || !canBeSold(itemStack)) continue;
             int amount = itemStack.getAmount();
             while (amount > 0) {
                 value += simulation.getBaseSellPrice(itemStack.getType());
@@ -157,6 +164,17 @@ public class GrandExchange {
         for (long stock : _stock.values())
             totalStock += stock;
         return totalStock;
+    }
+
+    public boolean canBeSold(ItemStack itemStack) {
+        if (itemStack.hasItemMeta()) {
+            ItemMeta itemMeta = itemStack.getItemMeta();
+            if (itemMeta.hasEnchants()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public void setTaxRate(double taxRate) {
