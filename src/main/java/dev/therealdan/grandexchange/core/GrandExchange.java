@@ -24,6 +24,7 @@ public class GrandExchange {
     private double _stretch = 130;
     private double _processingFee = 0.05;
     private double _taxRate = 0;
+    private double _findingBonus = 25000;
 
     private HashMap<Material, Long> _stock = new HashMap<>();
     private HashMap<UUID, SortPreference> _sortPreference = new HashMap<>();
@@ -63,6 +64,11 @@ public class GrandExchange {
             player.sendMessage(_config.secondary + getName(itemStack.getType()) + _config.primary + " can not be sold");
             player.getInventory().addItem(itemStack);
             return;
+        }
+
+        if (newToMarket(itemStack) && _findingBonus > 0) {
+            _economy.depositPlayer(player, _findingBonus);
+            Bukkit.broadcastMessage(_config.secondary + player.getName() + _config.primary + " has received a finding bonus of " + _config.secondary + _economy.format(_findingBonus) + _config.primary + " for introducing " + _config.secondary + getName(itemStack.getType()) + _config.primary + " to the GE for the first time!");
         }
 
         long max = -1;
@@ -175,6 +181,10 @@ public class GrandExchange {
         }
 
         return true;
+    }
+
+    public boolean newToMarket(ItemStack itemStack) {
+        return !_stock.containsKey(itemStack.getType());
     }
 
     public void setTaxRate(double taxRate) {
