@@ -5,6 +5,7 @@ import dev.therealdan.grandexchange.core.GrandExchange;
 import dev.therealdan.grandexchange.core.inventory.BuyUI;
 import dev.therealdan.grandexchange.core.inventory.PreferencesUI;
 import dev.therealdan.grandexchange.core.inventory.SellUI;
+import dev.therealdan.grandexchange.events.ItemListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -33,6 +34,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
         manager.registerEvents(_sellUI, this);
         manager.registerEvents(_buyUI, this);
         manager.registerEvents(_preferencesUI, this);
+        manager.registerEvents(new ItemListener(_grandExchange), this);
 
         getCommand("GrandExchange").setExecutor(new GrandExchangeCommand(config, _grandExchange, _sellUI, _buyUI, _preferencesUI));
     }
