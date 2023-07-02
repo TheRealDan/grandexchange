@@ -69,10 +69,7 @@ public class SellUI implements Listener {
         _uiOpen.remove(player.getUniqueId());
         if (!open) return;
 
-        for (ItemStack itemStack : event.getInventory().getContents()) {
-            if (itemStack == null) continue;
-            _grandExchange.sell(player, itemStack);
-        }
+        _grandExchange.sell(player, event.getInventory().getContents());
     }
 
     public void open(Player player) {

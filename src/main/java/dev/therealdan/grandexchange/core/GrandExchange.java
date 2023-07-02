@@ -59,6 +59,65 @@ public class GrandExchange {
         _yamlFile.save();
     }
 
+    public void sell(Player player, ItemStack[] itemStacks) {
+        HashSet<Material> cantSell = new HashSet<>();
+        HashSet<Material> newToMarket = new HashSet<>();
+        HashMap<Material, Long> min = new HashMap<>();
+        HashMap<Material, Long> max = new HashMap<>();
+        HashMap<Material, Long> count = new HashMap<>();
+        HashMap<Material, Long> cash = new HashMap<>();
+
+        for (ItemStack itemStack : itemStacks) {
+            if (itemStack == null) continue;
+            if (!canBeSold(itemStack)) {
+                cantSell.add(itemStack.getType());
+                player.getInventory().addItem(itemStack);
+                continue;
+            }
+            if (newToMarket(itemStack) && _findingBonus > 0) {
+                newToMarket.add(itemStack.getType());
+            }
+
+            long value = 0;
+            long amount = itemStack.getAmount();
+            count.put(itemStack.getType(), count.getOrDefault(itemStack.getType(), 0L) + itemStack.getAmount());
+            while (amount > 0) {
+                min.put(itemStack.getType(), getBaseSellPrice(itemStack.getType()));
+                value += min.get(itemStack.getType());
+                if (!max.containsKey(itemStack.getType())) max.put(itemStack.getType(), value);
+                addStock(itemStack.getType(), 1);
+                amount--;
+            }
+
+            cash.put(itemStack.getType(), cash.getOrDefault(itemStack.getType(), 0L) + value);
+        }
+
+        for (Map.Entry<Material, Long> entry : count.entrySet()) {
+            String message = _config.secondary + entry.getValue() + "x " + getName(entry.getKey()) + _config.primary + " sold for " + _config.secondary + _economy.format(cash.get(entry.getKey()));
+            if (!max.get(entry.getKey()).equals(min.get(entry.getKey()))) message += _config.primary + " (" + max.get(entry.getKey()) + " ~ " + min.get(entry.getKey()) + ")";
+            player.sendMessage(message);
+            _economy.depositPlayer(player, cash.get(entry.getKey()));
+        }
+
+        if (newToMarket.size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Material material : newToMarket)
+                stringBuilder.append(", ").append(getName(material));
+            String items = stringBuilder.toString().replaceFirst(", ", "");
+            double findingBonus = _findingBonus * newToMarket.size();
+            _economy.depositPlayer(player, findingBonus);
+            Bukkit.broadcastMessage(_config.secondary + player.getName() + _config.primary + " has received a finding bonus of " + _config.secondary + _economy.format(findingBonus) + _config.primary + " for introducing " + _config.secondary + items + _config.primary + " to the GE for the first time!");
+        }
+
+        if (cantSell.size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Material material : cantSell)
+                stringBuilder.append(", ").append(getName(material));
+            String items = stringBuilder.toString().replaceFirst(", ", "");
+            player.sendMessage(_config.secondary + items + _config.primary + " can not be sold");
+        }
+    }
+
     public void sell(Player player, ItemStack itemStack) {
         if (!canBeSold(itemStack)) {
             player.sendMessage(_config.secondary + getName(itemStack.getType()) + _config.primary + " can not be sold");
