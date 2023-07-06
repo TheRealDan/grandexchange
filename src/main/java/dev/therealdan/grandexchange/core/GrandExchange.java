@@ -149,6 +149,20 @@ public class GrandExchange {
         _economy.depositPlayer(player, value);
     }
 
+    public void sell(UUID uuid, ItemStack itemStack) {
+        if (!canBeSold(itemStack)) return;
+
+        long value = 0;
+        long amount = itemStack.getAmount();
+        while (amount > 0) {
+            value += getBaseSellPrice(itemStack.getType());
+            addStock(itemStack.getType(), 1);
+            amount--;
+        }
+
+        _economy.depositPlayer(Bukkit.getOfflinePlayer(uuid), value);
+    }
+
     public void addStock(Material material, long amount) {
         _stock.put(material, getStockCount(material) + amount);
     }

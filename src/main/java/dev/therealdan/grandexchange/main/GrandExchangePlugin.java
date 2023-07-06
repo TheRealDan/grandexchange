@@ -6,6 +6,7 @@ import dev.therealdan.grandexchange.core.inventory.BuyUI;
 import dev.therealdan.grandexchange.core.inventory.PreferencesUI;
 import dev.therealdan.grandexchange.core.inventory.SellUI;
 import dev.therealdan.grandexchange.events.ItemListener;
+import dev.therealdan.grandexchange.events.SignListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -18,6 +19,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
     private SellUI _sellUI;
     private BuyUI _buyUI;
     private PreferencesUI _preferencesUI;
+    private SignListener _signListener;
 
     @Override
     public void onEnable() {
@@ -35,6 +37,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
         manager.registerEvents(_buyUI, this);
         manager.registerEvents(_preferencesUI, this);
         manager.registerEvents(new ItemListener(_grandExchange), this);
+        manager.registerEvents(_signListener = new SignListener(this, config, _grandExchange), this);
 
         getCommand("GrandExchange").setExecutor(new GrandExchangeCommand(config, _grandExchange, _sellUI, _buyUI, _preferencesUI));
     }
@@ -45,6 +48,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
         _buyUI.closeAll();
         _preferencesUI.closeAll();
         _grandExchange.save();
+        _signListener.save();
     }
 
     private void setupEconomy() {
