@@ -43,7 +43,7 @@ public class SignListener implements Listener {
             _signs.put(location, owner);
         }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(grandExchangePlugin, this::task, 20, 20 * 10); // TODO - update for live
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(grandExchangePlugin, this::task, 20 * 60, 20 * 30);
     }
 
     public void save() {
