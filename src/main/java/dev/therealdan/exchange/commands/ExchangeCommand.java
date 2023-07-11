@@ -1,10 +1,10 @@
-package dev.therealdan.grandexchange.commands;
+package dev.therealdan.exchange.commands;
 
-import dev.therealdan.grandexchange.core.GrandExchange;
-import dev.therealdan.grandexchange.core.inventory.BuyUI;
-import dev.therealdan.grandexchange.core.inventory.PreferencesUI;
-import dev.therealdan.grandexchange.core.inventory.SellUI;
-import dev.therealdan.grandexchange.main.Config;
+import dev.therealdan.exchange.core.Exchange;
+import dev.therealdan.exchange.core.inventory.BuyUI;
+import dev.therealdan.exchange.core.inventory.PreferencesUI;
+import dev.therealdan.exchange.core.inventory.SellUI;
+import dev.therealdan.exchange.main.Config;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -14,19 +14,19 @@ import org.bukkit.entity.Player;
 
 import java.text.DecimalFormat;
 
-public class GrandExchangeCommand implements CommandExecutor {
+public class ExchangeCommand implements CommandExecutor {
 
     private DecimalFormat _decimalFormat = new DecimalFormat("#.##");
 
     private Config _config;
-    private GrandExchange _grandExchange;
+    private Exchange _exchange;
     private SellUI _sellUI;
     private BuyUI _buyUI;
     private PreferencesUI _preferencesUI;
 
-    public GrandExchangeCommand(Config config, GrandExchange grandExchange, SellUI sellUI, BuyUI buyUI, PreferencesUI preferencesUI) {
+    public ExchangeCommand(Config config, Exchange exchange, SellUI sellUI, BuyUI buyUI, PreferencesUI preferencesUI) {
         _config = config;
-        _grandExchange = grandExchange;
+        _exchange = exchange;
         _sellUI = sellUI;
         _buyUI = buyUI;
         _preferencesUI = preferencesUI;
@@ -62,7 +62,7 @@ public class GrandExchangeCommand implements CommandExecutor {
                     return true;
                 }
 
-                _grandExchange.setKing(target);
+                _exchange.setKing(target);
                 Bukkit.broadcastMessage(_config.secondary + target.getName() + _config.primary + " has been elected as King!");
                 return true;
 
@@ -82,22 +82,22 @@ public class GrandExchangeCommand implements CommandExecutor {
                     return true;
                 }
 
-                _grandExchange.setTaxRate(taxRate * 0.01);
+                _exchange.setTaxRate(taxRate * 0.01);
                 Bukkit.broadcastMessage(_config.primary + "King " + _config.secondary + player.getName() + _config.primary + " has adjusted the Tax Rate to " + _config.secondary + taxRate + "%");
                 return true;
             }
         }
 
         sender.sendMessage("");
-        sender.sendMessage(_config.primary + "/GE Sell " + _config.secondary + "Open the GE Sell menu");
-        sender.sendMessage(_config.primary + "/GE Buy [Search] " + _config.secondary + "Open the GE Buy menu");
-        sender.sendMessage(_config.primary + "/GE Preferences " + _config.secondary + "Set your sorting preference");
-        if (isKing(player)) sender.sendMessage(_config.primary + "/GE TaxRate [TaxRate] " + _config.secondary + "Set the tax rate");
-        if (sender.isOp()) sender.sendMessage(_config.primary + "/GE King [Player] " + _config.secondary + "Elect a King");
+        sender.sendMessage(_config.primary + "/EX Sell " + _config.secondary + "Open the GE Sell menu");
+        sender.sendMessage(_config.primary + "/EX Buy [Search] " + _config.secondary + "Open the GE Buy menu");
+        sender.sendMessage(_config.primary + "/EX Preferences " + _config.secondary + "Set your sorting preference");
+        if (isKing(player)) sender.sendMessage(_config.primary + "/EX TaxRate [TaxRate] " + _config.secondary + "Set the tax rate");
+        if (sender.isOp()) sender.sendMessage(_config.primary + "/EX King [Player] " + _config.secondary + "Elect a King");
         return true;
     }
 
     private boolean isKing(OfflinePlayer player) {
-        return player != null && _grandExchange.getKing() != null && _grandExchange.getKing().getUniqueId().equals(player.getUniqueId());
+        return player != null && _exchange.getKing() != null && _exchange.getKing().getUniqueId().equals(player.getUniqueId());
     }
 }

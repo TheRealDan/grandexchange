@@ -1,9 +1,9 @@
-package dev.therealdan.grandexchange.events;
+package dev.therealdan.exchange.events;
 
-import dev.therealdan.grandexchange.core.GrandExchange;
-import dev.therealdan.grandexchange.main.Config;
-import dev.therealdan.grandexchange.main.GrandExchangePlugin;
-import dev.therealdan.grandexchange.models.YamlFile;
+import dev.therealdan.exchange.core.Exchange;
+import dev.therealdan.exchange.main.Config;
+import dev.therealdan.exchange.main.ExchangePlugin;
+import dev.therealdan.exchange.models.YamlFile;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -24,18 +24,18 @@ import java.util.UUID;
 
 public class SignListener implements Listener {
 
-    private GrandExchangePlugin _grandExchangePlugin;
+    private ExchangePlugin _exchangePlugin;
     private Config _config;
     private YamlFile _yamlFile;
-    private GrandExchange _grandExchange;
+    private Exchange _exchange;
 
     private HashMap<Location, UUID> _signs = new HashMap<>();
 
-    public SignListener(GrandExchangePlugin grandExchangePlugin, Config config, GrandExchange grandExchange) {
-        _grandExchangePlugin = grandExchangePlugin;
+    public SignListener(ExchangePlugin exchangePlugin, Config config, Exchange exchange) {
+        _exchangePlugin = exchangePlugin;
         _config = config;
-        _yamlFile = new YamlFile(grandExchangePlugin, "data/signs.yml");
-        _grandExchange = grandExchange;
+        _yamlFile = new YamlFile(exchangePlugin, "data/signs.yml");
+        _exchange = exchange;
 
         for (String key : _yamlFile.getKeys("Signs")) {
             Location location = _yamlFile.getLocation("Signs." + key + ".Location");
@@ -43,7 +43,7 @@ public class SignListener implements Listener {
             _signs.put(location, owner);
         }
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(grandExchangePlugin, this::task, 20 * 60, 20 * 30);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(exchangePlugin, this::task, 20 * 60, 20 * 30);
     }
 
     public void save() {
@@ -86,8 +86,8 @@ public class SignListener implements Listener {
             for (ItemStack itemStack : chest.getInventory().getContents()) {
                 if (itemStack == null || itemStack.getType().equals(Material.AIR)) continue;
                 if (all || itemStack.getType().equals(material)) {
-                    if (!_grandExchange.canBeSold(itemStack)) continue;
-                    _grandExchange.sell(entry.getValue(), itemStack);
+                    if (!_exchange.canBeSold(itemStack)) continue;
+                    _exchange.sell(entry.getValue(), itemStack);
                     chest.getInventory().remove(itemStack);
                 }
             }
@@ -115,7 +115,7 @@ public class SignListener implements Listener {
 
         event.setLine(0, _config.primary + "Auto Sell");
         event.setLine(1, _config.primary + event.getPlayer().getName());
-        event.setLine(2, _config.primary + (all ? "All Items" : GrandExchange.getName(material)));
+        event.setLine(2, _config.primary + (all ? "All Items" : Exchange.getName(material)));
         event.setLine(3, "");
     }
 

@@ -1,4 +1,4 @@
-package dev.therealdan.grandexchange.models;
+package dev.therealdan.exchange.models;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

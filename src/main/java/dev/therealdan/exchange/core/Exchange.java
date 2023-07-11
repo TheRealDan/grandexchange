@@ -1,9 +1,9 @@
-package dev.therealdan.grandexchange.core;
+package dev.therealdan.exchange.core;
 
-import dev.therealdan.grandexchange.main.Config;
-import dev.therealdan.grandexchange.main.GrandExchangePlugin;
-import dev.therealdan.grandexchange.models.Icon;
-import dev.therealdan.grandexchange.models.YamlFile;
+import dev.therealdan.exchange.main.Config;
+import dev.therealdan.exchange.main.ExchangePlugin;
+import dev.therealdan.exchange.models.Icon;
+import dev.therealdan.exchange.models.YamlFile;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -14,7 +14,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 
-public class GrandExchange {
+public class Exchange {
 
     private Economy _economy;
     private Config _config;
@@ -30,13 +30,13 @@ public class GrandExchange {
     private HashMap<UUID, SortPreference> _sortPreference = new HashMap<>();
     private OfflinePlayer _king = null;
 
-    private GrandExchange() {
+    private Exchange() {
     }
 
-    public GrandExchange(GrandExchangePlugin grandExchangePlugin, Economy economy, Config config) {
+    public Exchange(ExchangePlugin exchangePlugin, Economy economy, Config config) {
         _economy = economy;
         _config = config;
-        _yamlFile = new YamlFile(grandExchangePlugin, "data/grandexchange.yml");
+        _yamlFile = new YamlFile(exchangePlugin, "data/exchange.yml");
 
         if (_yamlFile.getData().contains("King"))
             _king = Bukkit.getOfflinePlayer(UUID.fromString(_yamlFile.getData().getString("King")));
@@ -172,7 +172,7 @@ public class GrandExchange {
     }
 
     public long calculateSellValue(List<ItemStack> itemStacks) {
-        GrandExchange simulation = getSimulation();
+        Exchange simulation = getSimulation();
         long value = 0;
         for (ItemStack itemStack : itemStacks) {
             if (itemStack == null || itemStack.getType().equals(Material.AIR) || !canBeSold(itemStack)) continue;
@@ -187,7 +187,7 @@ public class GrandExchange {
     }
 
     public long calculateBuyStackPrice(Material material, int stackSize) {
-        GrandExchange simulation = getSimulation();
+        Exchange simulation = getSimulation();
         long value = 0;
         for (int i = 0; i < stackSize; i++) {
             simulation.removeStock(material, 1);
@@ -197,7 +197,7 @@ public class GrandExchange {
     }
 
     public long calculateTax(Material material, int stackSize) {
-        GrandExchange simulation = getSimulation();
+        Exchange simulation = getSimulation();
         long value = 0;
         for (int i = 0; i < stackSize; i++) {
             value += simulation.getTax(material);
@@ -341,11 +341,11 @@ public class GrandExchange {
         return new ArrayList<>(_stock.keySet());
     }
 
-    private GrandExchange getSimulation() {
-        GrandExchange grandExchange = new GrandExchange();
-        grandExchange._stock = new HashMap<>(_stock);
-        grandExchange._taxRate = _taxRate;
-        return grandExchange;
+    private Exchange getSimulation() {
+        Exchange exchange = new Exchange();
+        exchange._stock = new HashMap<>(_stock);
+        exchange._taxRate = _taxRate;
+        return exchange;
     }
 
     public Icon getIcon(Material material) {

@@ -1,21 +1,21 @@
-package dev.therealdan.grandexchange.main;
+package dev.therealdan.exchange.main;
 
-import dev.therealdan.grandexchange.commands.GrandExchangeCommand;
-import dev.therealdan.grandexchange.core.GrandExchange;
-import dev.therealdan.grandexchange.core.inventory.BuyUI;
-import dev.therealdan.grandexchange.core.inventory.PreferencesUI;
-import dev.therealdan.grandexchange.core.inventory.SellUI;
-import dev.therealdan.grandexchange.events.ItemListener;
-import dev.therealdan.grandexchange.events.SignListener;
+import dev.therealdan.exchange.commands.ExchangeCommand;
+import dev.therealdan.exchange.core.Exchange;
+import dev.therealdan.exchange.core.inventory.BuyUI;
+import dev.therealdan.exchange.core.inventory.PreferencesUI;
+import dev.therealdan.exchange.core.inventory.SellUI;
+import dev.therealdan.exchange.events.ItemListener;
+import dev.therealdan.exchange.events.SignListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class GrandExchangePlugin extends JavaPlugin {
+public final class ExchangePlugin extends JavaPlugin {
 
     private Economy economy = null;
-    private GrandExchange _grandExchange;
+    private Exchange _exchange;
     private SellUI _sellUI;
     private BuyUI _buyUI;
     private PreferencesUI _preferencesUI;
@@ -27,19 +27,19 @@ public final class GrandExchangePlugin extends JavaPlugin {
 
         Config config = new Config(this);
 
-        _grandExchange = new GrandExchange(this, economy, config);
-        _sellUI = new SellUI(economy, _grandExchange);
-        _buyUI = new BuyUI(economy, config, _grandExchange);
-        _preferencesUI = new PreferencesUI(config, _grandExchange);
+        _exchange = new Exchange(this, economy, config);
+        _sellUI = new SellUI(economy, _exchange);
+        _buyUI = new BuyUI(economy, config, _exchange);
+        _preferencesUI = new PreferencesUI(config, _exchange);
 
         PluginManager manager = getServer().getPluginManager();
         manager.registerEvents(_sellUI, this);
         manager.registerEvents(_buyUI, this);
         manager.registerEvents(_preferencesUI, this);
-        manager.registerEvents(new ItemListener(_grandExchange), this);
-        manager.registerEvents(_signListener = new SignListener(this, config, _grandExchange), this);
+        manager.registerEvents(new ItemListener(_exchange), this);
+        manager.registerEvents(_signListener = new SignListener(this, config, _exchange), this);
 
-        getCommand("GrandExchange").setExecutor(new GrandExchangeCommand(config, _grandExchange, _sellUI, _buyUI, _preferencesUI));
+        getCommand("Exchange").setExecutor(new ExchangeCommand(config, _exchange, _sellUI, _buyUI, _preferencesUI));
     }
 
     @Override
@@ -47,7 +47,7 @@ public final class GrandExchangePlugin extends JavaPlugin {
         _sellUI.cancelAll();
         _buyUI.closeAll();
         _preferencesUI.closeAll();
-        _grandExchange.save();
+        _exchange.save();
         _signListener.save();
     }
 

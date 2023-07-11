@@ -1,4 +1,4 @@
-package dev.therealdan.grandexchange.main;
+package dev.therealdan.exchange.main;
 
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;

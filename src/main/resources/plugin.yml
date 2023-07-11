@@ -1,9 +1,9 @@
-name: GrandExchange
+name: Exchange
 version: @version@
-main: dev.therealdan.grandexchange.main.GrandExchangePlugin
+main: dev.therealdan.exchange.main.ExchangePlugin
 api-version: 1.19
 depend: [Vault]
 authors: [TheRealDan]
 commands:
-  GrandExchange:
-    aliases: [ge]
+  Exchange:
+    aliases: [ex]

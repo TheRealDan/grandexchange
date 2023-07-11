@@ -1,4 +1,4 @@
-package dev.therealdan.grandexchange.models;
+package dev.therealdan.exchange.models;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;

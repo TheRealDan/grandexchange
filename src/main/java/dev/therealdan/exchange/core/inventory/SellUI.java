@@ -1,6 +1,6 @@
-package dev.therealdan.grandexchange.core.inventory;
+package dev.therealdan.exchange.core.inventory;
 
-import dev.therealdan.grandexchange.core.GrandExchange;
+import dev.therealdan.exchange.core.Exchange;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -20,15 +20,15 @@ import java.util.UUID;
 public class SellUI implements Listener {
 
     private Economy _economy;
-    private GrandExchange _grandExchange;
+    private Exchange _exchange;
 
     private int _inventorySize = 27;
 
     private HashSet<UUID> _uiOpen = new HashSet<>();
 
-    public SellUI(Economy economy, GrandExchange grandExchange) {
+    public SellUI(Economy economy, Exchange exchange) {
         _economy = economy;
-        _grandExchange = grandExchange;
+        _exchange = exchange;
     }
 
     @EventHandler
@@ -51,7 +51,7 @@ public class SellUI implements Listener {
 
         player.getInventory().setItem(event.getSlot(), new ItemStack(Material.AIR));
         event.getInventory().addItem(itemStack);
-        Inventory inventory = Bukkit.createInventory(null, _inventorySize, "Grand Exchange Sell - $" + _grandExchange.calculateSellValue(Arrays.asList(event.getInventory().getContents())));
+        Inventory inventory = Bukkit.createInventory(null, _inventorySize, "Exchange Sell - $" + _exchange.calculateSellValue(Arrays.asList(event.getInventory().getContents())));
         for (int i = 0; i < _inventorySize; i++) {
             ItemStack item = event.getInventory().getItem(i);
             if (item == null || item.getType().equals(Material.AIR)) continue;
@@ -69,11 +69,11 @@ public class SellUI implements Listener {
         _uiOpen.remove(player.getUniqueId());
         if (!open) return;
 
-        _grandExchange.sell(player, event.getInventory().getContents());
+        _exchange.sell(player, event.getInventory().getContents());
     }
 
     public void open(Player player) {
-        player.openInventory(Bukkit.createInventory(null, _inventorySize, "Grand Exchange Sell"));
+        player.openInventory(Bukkit.createInventory(null, _inventorySize, "Exchange Sell"));
         _uiOpen.add(player.getUniqueId());
     }
 

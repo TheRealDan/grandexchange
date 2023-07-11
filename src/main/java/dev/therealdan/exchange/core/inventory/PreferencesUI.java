@@ -1,8 +1,8 @@
-package dev.therealdan.grandexchange.core.inventory;
+package dev.therealdan.exchange.core.inventory;
 
-import dev.therealdan.grandexchange.core.GrandExchange;
-import dev.therealdan.grandexchange.main.Config;
-import dev.therealdan.grandexchange.models.Icon;
+import dev.therealdan.exchange.core.Exchange;
+import dev.therealdan.exchange.main.Config;
+import dev.therealdan.exchange.models.Icon;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -19,13 +19,13 @@ import java.util.UUID;
 public class PreferencesUI implements Listener {
 
     private Config _config;
-    private GrandExchange _grandExchange;
+    private Exchange _exchange;
 
     private HashSet<UUID> _uiOpen = new HashSet<>();
 
-    public PreferencesUI(Config config, GrandExchange grandExchange) {
+    public PreferencesUI(Config config, Exchange exchange) {
         _config = config;
-        _grandExchange = grandExchange;
+        _exchange = exchange;
     }
 
     @EventHandler
@@ -35,10 +35,10 @@ public class PreferencesUI implements Listener {
         event.setCancelled(true);
 
         int i = 0;
-        for (GrandExchange.SortPreference sortPreference : GrandExchange.SortPreference.values()) {
+        for (Exchange.SortPreference sortPreference : Exchange.SortPreference.values()) {
             if (event.getSlot() == i) {
-                _grandExchange.setSortPreference(player.getUniqueId(), sortPreference);
-                player.sendMessage(_config.primary + "Grand Exchange sort preference set to " + _config.secondary + sortPreference.getName());
+                _exchange.setSortPreference(player.getUniqueId(), sortPreference);
+                player.sendMessage(_config.primary + "Exchange sort preference set to " + _config.secondary + sortPreference.getName());
                 player.closeInventory();
             }
             i++;
@@ -51,17 +51,17 @@ public class PreferencesUI implements Listener {
     }
 
     public void open(Player player) {
-        Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, "Grand Exchange - Preferences");
+        Inventory inventory = Bukkit.createInventory(null, InventoryType.HOPPER, "Exchange - Preferences");
 
         inventory.addItem(new Icon(Material.CHEST, _config.primary + "Stock Count",
-                _config.secondary + "Click to sort the GE with top stocked items first"));
+                _config.secondary + "Click to sort the EX with top stocked items first"));
         inventory.addItem(new Icon(Material.HOPPER, _config.primary + "Stock Count Ascending",
-                _config.secondary + "Click to sort the GE with lowest stocked items first"));
+                _config.secondary + "Click to sort the EX with lowest stocked items first"));
 
         inventory.addItem(new Icon(Material.BOOK, _config.primary + "Alphabetical",
-                _config.secondary + "Click to sort the GE alphabetically from A-Z"));
+                _config.secondary + "Click to sort the EX alphabetically from A-Z"));
         inventory.addItem(new Icon(Material.WRITABLE_BOOK, _config.primary + "Alphabetical Descending",
-                _config.secondary + "Click to sort the GE descending alphabetically from Z-A"));
+                _config.secondary + "Click to sort the EX descending alphabetically from Z-A"));
 
         player.openInventory(inventory);
         _uiOpen.add(player.getUniqueId());
