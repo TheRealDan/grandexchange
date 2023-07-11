@@ -14,7 +14,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ExchangePlugin extends JavaPlugin {
 
-    private Economy economy = null;
+    private Economy _economy = null;
     private Exchange _exchange;
     private SellUI _sellUI;
     private BuyUI _buyUI;
@@ -23,13 +23,16 @@ public final class ExchangePlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        setupEconomy();
+        if (!setupEconomy()) {
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
         Config config = new Config(this);
 
-        _exchange = new Exchange(this, economy, config);
-        _sellUI = new SellUI(economy, _exchange);
-        _buyUI = new BuyUI(economy, config, _exchange);
+        _exchange = new Exchange(this, _economy, config);
+        _sellUI = new SellUI(_economy, _exchange);
+        _buyUI = new BuyUI(_economy, config, _exchange);
         _preferencesUI = new PreferencesUI(config, _exchange);
 
         PluginManager manager = getServer().getPluginManager();
@@ -44,17 +47,18 @@ public final class ExchangePlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        _sellUI.cancelAll();
-        _buyUI.closeAll();
-        _preferencesUI.closeAll();
-        _exchange.save();
-        _signListener.save();
+        if (_sellUI != null) _sellUI.cancelAll();
+        if (_buyUI != null) _buyUI.closeAll();
+        if (_preferencesUI != null) _preferencesUI.closeAll();
+        if (_exchange != null) _exchange.save();
+        if (_signListener != null) _signListener.save();
     }
 
-    private void setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) return;
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) return false;
         RegisteredServiceProvider<Economy> serviceProvider = getServer().getServicesManager().getRegistration(Economy.class);
-        if (serviceProvider == null) return;
-        economy = serviceProvider.getProvider();
+        if (serviceProvider == null) return false;
+        _economy = serviceProvider.getProvider();
+        return true;
     }
 }
